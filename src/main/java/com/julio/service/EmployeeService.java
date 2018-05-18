@@ -18,4 +18,6 @@ public interface EmployeeService {
 	
 	void deleteAll();
 	
+	void deleteById(String id);
+	
 }

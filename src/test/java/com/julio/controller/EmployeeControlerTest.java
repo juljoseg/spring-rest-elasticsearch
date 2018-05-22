@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+
 @RunWith(SpringRunner.class)
 @WebMvcTest(EmployeeControler.class)
 public class EmployeeControlerTest {
@@ -30,13 +31,31 @@ public class EmployeeControlerTest {
 	private EmployeeService employeeService;
 	
 	
+	
 	@Test
 	public void testSearchEmployee() throws Exception
 	{
-		given(this.employeeService.findById("1")).willReturn(new Employee("10","Test","LastN"));
-		this.mvc.perform( get("/employees/1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect( content().json("{ \"id\": \"10\",\"firstName\": \"Test\", \"lastName\": \"LastN\" } " ) );
+		given(this.employeeService.findById(eq("1"))).willReturn(new Employee("10","Test","LastN"));
+		
+		this.mvc.perform( get("/employees/1")
+						.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect( content().json("{ \"id\": \"10\",\"firstName\": \"Test\", \"lastName\": \"LastN\" } " ) );
 		
 	}
 	
+	
+	
+	@Test
+	public void testCreateEmployee() throws Exception
+	{
+		when(employeeService.save(any(Employee.class))).thenReturn(new Employee("11","Name11","LastName11"));
+		
+		
+		this.mvc.perform( post("/employees").content( "{ \"id\": \"10\",\"firstName\": \"Test\", \"lastName\": \"LastN\" } " ).contentType(MediaType.APPLICATION_JSON))
+			  .andExpect(status().isCreated())
+		      .andExpect( header().string("location","http://localhost/employees/11"));
+		
+	}
 	
 }
